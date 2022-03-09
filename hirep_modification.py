@@ -1,4 +1,12 @@
+from write_complex_struct import write_headerfile
+
 if __name__ == "__main__":
+    types = ["int", "float", "double"]
+    base_priority = {}
+    for i, typ in enumerate(types):
+        base_priority[typ] = i + 1
+    write_headerfile(types, base_priority)
+
     with open("gpu_complex.h.tmp", "r", encoding="UTF-8") as file:
         header_template = file.readlines()
 
