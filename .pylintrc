@@ -1,0 +1,6 @@
+[MASTER]
+disable=line-too-long,
+        missing-module-docstring,
+        import-error,
+        duplicate-code,
+        invalid-name
