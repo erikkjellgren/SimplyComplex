@@ -4,6 +4,7 @@ import numpy as np
 
 from operator_overloads import (
     constructor,
+    constructor_reverse_priority,
     overload_divequal,
     overload_divequal_reverse_priority,
     overload_division_lhs,
@@ -59,7 +60,7 @@ def write_headerfile(base_types: List[str], priority: Dict[str, int]) -> None:
         for base_type in base_types:
             headerfile.write(f"struct complex_{base_type}")
             headerfile.write("{\n")
-            headerfile.write(f"  {base_type} re, im\n")
+            headerfile.write(f"  {base_type} re, im;\n")
             constructor(base_type, base_types, new_types, priority, headerfile)
             overload_equal(base_type, base_types, new_types, priority, headerfile)
             overload_negate(base_type, headerfile)
@@ -78,6 +79,7 @@ def write_headerfile(base_types: List[str], priority: Dict[str, int]) -> None:
             overload_product_lhs(base_type, base_types, new_types, priority, headerfile)
             overload_division_lhs(base_type, base_types, new_types, priority, headerfile)
         for base_type in base_types:
+            constructor_reverse_priority(base_type, new_types, priority, headerfile)
             overload_equal_reverse_priority(base_type, new_types, priority, headerfile)
             overload_plusequal_reverse_priority(base_type, new_types, priority, headerfile)
             overload_minusequal_reverse_priority(base_type, new_types, priority, headerfile)
