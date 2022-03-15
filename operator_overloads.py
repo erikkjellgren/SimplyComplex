@@ -59,9 +59,7 @@ def overload_negate(
     """
     outfile.write(f"  __host__ __device__ complex_{new_base_type} operator-(void)\n")
     outfile.write("  {\n")
-    outfile.write("    re = -re;\n")
-    outfile.write("    im = -im;\n")
-    outfile.write("    return *this;\n")
+    outfile.write(f"    return complex_{new_base_type}(-re, -im);\n")
     outfile.write("  }\n")
 
 
@@ -282,8 +280,7 @@ def overload_plus_rhs(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator+(const {base_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    re += ({new_base_type})x;\n")
-        outfile.write("    return *this;\n")
+        outfile.write(f"    return complex_{new_base_type}(re+({new_base_type})x, im);\n")
         outfile.write("  }\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
@@ -291,9 +288,9 @@ def overload_plus_rhs(
             continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator+(const {new_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    re += ({new_base_type})x.re;\n")
-        outfile.write(f"    im += ({new_base_type})x.im;\n")
-        outfile.write("    return *this;\n")
+        outfile.write(
+            f"    return complex_{new_base_type}(re+({new_base_type})x.re, im+({new_base_type})x.im);\n"
+        )
         outfile.write("  }\n")
 
 
@@ -316,8 +313,7 @@ def overload_minus_rhs(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator-(const {base_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    re -= ({new_base_type})x;\n")
-        outfile.write("    return *this;\n")
+        outfile.write(f"    return complex_{new_base_type}(re-({new_base_type})x, im);\n")
         outfile.write("  }\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
@@ -325,9 +321,9 @@ def overload_minus_rhs(
             continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator-(const {new_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    re -= ({new_base_type})x.re;\n")
-        outfile.write(f"    im -= ({new_base_type})x.im;\n")
-        outfile.write("    return *this;\n")
+        outfile.write(
+            f"    return complex_{new_base_type}(re-({new_base_type})x.re, im-({new_base_type})x.im);\n"
+        )
         outfile.write("  }\n")
 
 
@@ -355,9 +351,7 @@ def overload_product_rhs(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator*(const {base_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    re *= ({new_base_type})x;\n")
-        outfile.write(f"    im *= ({new_base_type})x;\n")
-        outfile.write("    return *this;\n")
+        outfile.write(f"    return complex_{new_base_type}(re*({new_base_type})x, im*({new_base_type})x);\n")
         outfile.write("  }\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
@@ -365,12 +359,9 @@ def overload_product_rhs(
             continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator*(const {new_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    {new_base_type} re_tmp, im_tmp;\n")
-        outfile.write(f"    re_tmp = re*(({new_base_type})x.re) - im*(({new_base_type})x.im);\n")
-        outfile.write(f"    im_tmp = re*(({new_base_type})x.im) + im*(({new_base_type})x.re);\n")
-        outfile.write("    re = re_tmp;\n")
-        outfile.write("    im = im_tmp;\n")
-        outfile.write("    return *this;\n")
+        re_str = f"re*(({new_base_type})x.re) - im*(({new_base_type})x.im)"
+        im_str = f"re*(({new_base_type})x.im) + im*(({new_base_type})x.re)"
+        outfile.write(f"    return complex_{new_base_type}({re_str}, {im_str});\n")
         outfile.write("  }\n")
 
 
@@ -398,9 +389,7 @@ def overload_division_rhs(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator/(const {base_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    re /= ({new_base_type})x;\n")
-        outfile.write(f"    im /= ({new_base_type})x;\n")
-        outfile.write("    return *this;\n")
+        outfile.write(f"    return complex_{new_base_type}(re/({new_base_type})x, im/({new_base_type})x);\n")
         outfile.write("  }\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
@@ -408,16 +397,9 @@ def overload_division_rhs(
             continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type} operator/(const {new_type} x)\n")
         outfile.write("  {\n")
-        outfile.write(f"    {new_base_type} re_tmp, im_tmp;\n")
-        outfile.write(
-            f"    re_tmp = (re*(({new_base_type})x.re) + im*(({new_base_type})x.im)) / ((({new_base_type})x.re)*(({new_base_type})x.re) + (({new_base_type})x.im)*(({new_base_type})x.im));\n"
-        )
-        outfile.write(
-            f"    im_tmp = (im*(({new_base_type})x.re) - re*(({new_base_type})x.im)) / ((({new_base_type})x.re)*(({new_base_type})x.re) + (({new_base_type})x.im)*(({new_base_type})x.im));\n"
-        )
-        outfile.write("    re = re_tmp;\n")
-        outfile.write("    im = im_tmp;\n")
-        outfile.write("    return *this;\n")
+        re_str = f"(re*(({new_base_type})x.re) + im*(({new_base_type})x.im)) / ((({new_base_type})x.re)*(({new_base_type})x.re) + (({new_base_type})x.im)*(({new_base_type})x.im))"
+        im_str = f"(im*(({new_base_type})x.re) - re*(({new_base_type})x.im)) / ((({new_base_type})x.re)*(({new_base_type})x.re) + (({new_base_type})x.im)*(({new_base_type})x.im))"
+        outfile.write(f"    return complex_{new_base_type}({re_str}, {im_str});\n")
         outfile.write("  }\n")
 
 
