@@ -16,7 +16,7 @@ if __name__ == "__main__":
     with open("gpu_complex.h", "w", encoding="UTF-8") as new_header:
         write = True
         for line in header_template:
-            if "#define I (hr_complex(0.0, 1.0))" in line:
+            if "#define I (hr_complex_int(0, 1))" in line:
                 write = True
                 new_header.write(
                     "/*******************************************************************************\n"
