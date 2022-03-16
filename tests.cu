@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "SimplyComplex.h"
-#include <typeinfo>
 #include <iostream>
 
 TEST(ComplexDouble, overload_plus_rhs_double){
