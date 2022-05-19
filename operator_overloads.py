@@ -17,34 +17,37 @@ def constructor(
       priority: Priority for resulting typer when operating two different types.
       outfile: File pointer to write struct to.
     """
-    outfile.write(f"  __host__ __device__ complex_{new_base_type}(void){{}}\n")
+    outfile.write(f"__host__ __device__ complex_{new_base_type}::complex_{new_base_type}(void){{}}\n")
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}(const {base_type} x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re = x;\n")
-        outfile.write("    im = 0;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}::complex_{new_base_type}(const {base_type} x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re = x;\n")
+        outfile.write("  im = 0;\n")
+        outfile.write("}\n")
     for base_type1 in base_types:
         for base_type2 in base_types:
             outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}(const {base_type1} a, const {base_type2} b)\n"
+                f"__host__ __device__ complex_{new_base_type}::complex_{new_base_type}(const {base_type1} a, const {base_type2} b)\n"
             )
-            outfile.write("  {\n")
-            outfile.write("    re = a;\n")
-            outfile.write("    im = b;\n")
-            outfile.write("  }\n")
+            outfile.write("{\n")
+            outfile.write("  re = a;\n")
+            outfile.write("  im = b;\n")
+            outfile.write("}\n")
     for new_type in new_types:
         # Write decleration for contructors that take a high priority and contructs a low priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(f"  __host__ __device__ complex_{new_base_type}(const {new_type} &x);\n")
             continue
         if priority[new_type] == priority[f"complex_{new_base_type}"]:
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}(const {new_type} &x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re = x.re;\n")
-        outfile.write("    im = x.im;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}::complex_{new_base_type}(const {new_type} &x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re = x.re;\n")
+        outfile.write("  im = x.im;\n")
+        outfile.write("}\n")
 
 
 def overload_negate(
@@ -57,10 +60,12 @@ def overload_negate(
       new_base_type: base type for the new complex struct.
       outfile: File pointer to write struct to.
     """
-    outfile.write(f"  __host__ __device__ complex_{new_base_type} operator-(void) const\n")
-    outfile.write("  {\n")
-    outfile.write(f"    return complex_{new_base_type}(-re, -im);\n")
-    outfile.write("  }\n")
+    outfile.write(
+        f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator-(void) const\n"
+    )
+    outfile.write("{\n")
+    outfile.write(f"  return complex_{new_base_type}(-re, -im);\n")
+    outfile.write("}\n")
 
 
 def overload_equal(
@@ -80,23 +85,25 @@ def overload_equal(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator=(const {base_type} x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re = x;\n")
-        outfile.write("    im = 0;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator=(const {base_type} x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re = x;\n")
+        outfile.write("  im = 0;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator=(const {new_type} &x);\n")
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator=(const {new_type} &x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re = x.re;\n")
-        outfile.write("    im = x.im;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator=(const {new_type} &x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re = x.re;\n")
+        outfile.write("  im = x.im;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
 
 
 def overload_plusequal(
@@ -116,24 +123,24 @@ def overload_plusequal(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator+=(const {base_type} x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re += x;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator+=(const {base_type} x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re += x;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator+=(const {new_type} &x);\n"
-            )
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator+=(const {new_type} &x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re += x.re;\n")
-        outfile.write("    im += x.im;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator+=(const {new_type} &x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re += x.re;\n")
+        outfile.write("  im += x.im;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
 
 
 def overload_minusequal(
@@ -153,24 +160,24 @@ def overload_minusequal(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator-=(const {base_type} x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re -= x;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator-=(const {base_type} x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re -= x;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator-=(const {new_type} &x);\n"
-            )
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator-=(const {new_type} &x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re -= x.re;\n")
-        outfile.write("    im -= x.im;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator-=(const {new_type} &x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re -= x.re;\n")
+        outfile.write("  im -= x.im;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
 
 
 def overload_prodequal(
@@ -195,28 +202,28 @@ def overload_prodequal(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator*=(const {base_type} x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re *= x;\n")
-        outfile.write("    im *= x;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator*=(const {base_type} x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re *= x;\n")
+        outfile.write("  im *= x;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator*=(const {new_type} &x);\n"
-            )
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator*=(const {new_type} &x)\n")
-        outfile.write("  {\n")
-        outfile.write(f"    {new_base_type} re_tmp, im_tmp;\n")
-        outfile.write("    re_tmp = re*(x.re) - im*(x.im);\n")
-        outfile.write("    im_tmp = re*(x.im) + im*(x.re);\n")
-        outfile.write("    re = re_tmp;\n")
-        outfile.write("    im = im_tmp;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator*=(const {new_type} &x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  {new_base_type} re_tmp, im_tmp;\n")
+        outfile.write("  re_tmp = re*(x.re) - im*(x.im);\n")
+        outfile.write("  im_tmp = re*(x.im) + im*(x.re);\n")
+        outfile.write("  re = re_tmp;\n")
+        outfile.write("  im = im_tmp;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
 
 
 def overload_divequal(
@@ -241,28 +248,28 @@ def overload_divequal(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator/=(const {base_type} x)\n")
-        outfile.write("  {\n")
-        outfile.write("    re /= x;\n")
-        outfile.write("    im /= x;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator/=(const {base_type} x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write("  re /= x;\n")
+        outfile.write("  im /= x;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator/=(const {new_type} &x);\n"
-            )
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator/=(const {new_type} &x)\n")
-        outfile.write("  {\n")
-        outfile.write(f"    {new_base_type} re_tmp, im_tmp;\n")
-        outfile.write("    re_tmp = (re*(x.re) + im*(x.im)) / ((x.re)*(x.re) + (x.im)*(x.im));\n")
-        outfile.write("    im_tmp = (im*(x.re) - re*(x.im)) / ((x.re)*(x.re) + (x.im)*(x.im));\n")
-        outfile.write("    re = re_tmp;\n")
-        outfile.write("    im = im_tmp;\n")
-        outfile.write("    return *this;\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type}& complex_{new_base_type}::operator/=(const {new_type} &x)\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  {new_base_type} re_tmp, im_tmp;\n")
+        outfile.write("  re_tmp = (re*(x.re) + im*(x.im)) / ((x.re)*(x.re) + (x.im)*(x.im));\n")
+        outfile.write("  im_tmp = (im*(x.re) - re*(x.im)) / ((x.re)*(x.re) + (x.im)*(x.im));\n")
+        outfile.write("  re = re_tmp;\n")
+        outfile.write("  im = im_tmp;\n")
+        outfile.write("  return *this;\n")
+        outfile.write("}\n")
 
 
 def overload_plus_rhs(
@@ -282,18 +289,22 @@ def overload_plus_rhs(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator+(const {base_type} x) const\n")
-        outfile.write("  {\n")
-        outfile.write(f"    return complex_{new_base_type}(re+x, im);\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator+(const {base_type} x) const\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  return complex_{new_base_type}(re+x, im);\n")
+        outfile.write("}\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator+(const {new_type} &x) const\n")
-        outfile.write("  {\n")
-        outfile.write(f"    return complex_{new_base_type}(re+x.re, im+x.im);\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator+(const {new_type} &x) const\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  return complex_{new_base_type}(re+x.re, im+x.im);\n")
+        outfile.write("}\n")
 
 
 def overload_minus_rhs(
@@ -313,18 +324,22 @@ def overload_minus_rhs(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator-(const {base_type} x) const\n")
-        outfile.write("  {\n")
-        outfile.write(f"    return complex_{new_base_type}(re-x, im);\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator-(const {base_type} x) const\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  return complex_{new_base_type}(re-x, im);\n")
+        outfile.write("}\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator-(const {new_type} &x) const\n")
-        outfile.write("  {\n")
-        outfile.write(f"    return complex_{new_base_type}(re-x.re, im-x.im);\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator-(const {new_type} &x) const\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  return complex_{new_base_type}(re-x.re, im-x.im);\n")
+        outfile.write("}\n")
 
 
 def overload_product_rhs(
@@ -349,20 +364,24 @@ def overload_product_rhs(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator*(const {base_type} x) const\n")
-        outfile.write("  {\n")
-        outfile.write(f"    return complex_{new_base_type}(re*x, im*x);\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator*(const {base_type} x) const\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  return complex_{new_base_type}(re*x, im*x);\n")
+        outfile.write("}\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator*(const {new_type} &x) const\n")
-        outfile.write("  {\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator*(const {new_type} &x) const\n"
+        )
+        outfile.write("{\n")
         re_str = "re*(x.re) - im*(x.im)"
         im_str = "re*(x.im) + im*(x.re)"
-        outfile.write(f"    return complex_{new_base_type}({re_str}, {im_str});\n")
-        outfile.write("  }\n")
+        outfile.write(f"  return complex_{new_base_type}({re_str}, {im_str});\n")
+        outfile.write("}\n")
 
 
 def overload_division_rhs(
@@ -387,20 +406,24 @@ def overload_division_rhs(
       outfile: File pointer to write struct to.
     """
     for base_type in base_types:
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator/(const {base_type} x) const\n")
-        outfile.write("  {\n")
-        outfile.write(f"    return complex_{new_base_type}(re/x, im/x);\n")
-        outfile.write("  }\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator/(const {base_type} x) const\n"
+        )
+        outfile.write("{\n")
+        outfile.write(f"  return complex_{new_base_type}(re/x, im/x);\n")
+        outfile.write("}\n")
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] > priority[f"complex_{new_base_type}"]:
             continue
-        outfile.write(f"  __host__ __device__ complex_{new_base_type} operator/(const {new_type} &x) const\n")
-        outfile.write("  {\n")
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator/(const {new_type} &x) const\n"
+        )
+        outfile.write("{\n")
         re_str = "(re*(x.re) + im*(x.im)) / ((x.re)*(x.re) + (x.im)*(x.im))"
         im_str = "(im*(x.re) - re*(x.im)) / ((x.re)*(x.re) + (x.im)*(x.im))"
-        outfile.write(f"    return complex_{new_base_type}({re_str}, {im_str});\n")
-        outfile.write("  }\n")
+        outfile.write(f"  return complex_{new_base_type}({re_str}, {im_str});\n")
+        outfile.write("}\n")
 
 
 def overload_plus_lhs(
@@ -421,14 +444,14 @@ def overload_plus_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator+(const {base_type} x, const complex_{new_base_type} &c){{return c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator+(const {base_type} x, const complex_{new_base_type} &c){{return c+x;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator+(const {new_type} &x, const complex_{new_base_type} &c){{return c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator+(const {new_type} &x, const complex_{new_base_type} &c){{return c+x;}}\n"
         )
 
 
@@ -450,14 +473,14 @@ def overload_minus_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator-(const {base_type} x, const complex_{new_base_type} &c){{return -c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator-(const {base_type} x, const complex_{new_base_type} &c){{return -c+x;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator-(const {new_type} &x, const complex_{new_base_type} &c){{return -c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator-(const {new_type} &x, const complex_{new_base_type} &c){{return -c+x;}}\n"
         )
 
 
@@ -479,14 +502,14 @@ def overload_product_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator*(const {base_type} x, const complex_{new_base_type} &c){{return c*x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator*(const {base_type} x, const complex_{new_base_type} &c){{return c*x;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator*(const {new_type} &x, const complex_{new_base_type} &c){{return c*x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator*(const {new_type} &x, const complex_{new_base_type} &c){{return c*x;}}\n"
         )
 
 
@@ -508,14 +531,14 @@ def overload_division_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator/(const {base_type} x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator/(const {base_type} x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} operator/(const {new_type} &x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
+            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator/(const {new_type} &x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
         )
 
 

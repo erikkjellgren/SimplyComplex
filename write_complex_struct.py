@@ -67,13 +67,7 @@ def write_cudafile(base_types: List[str], priority: Dict[str, int]) -> None:
         # priority values are required to be above zero.
         priority[type_name] = max_priority + priority[base_type]
     with open("SimplyComplex.c", "w", encoding="UTF-8") as cudafile:
-        # Write dummy structs of higher priority
-        for new_type in new_types:
-            cudafile.write(f"struct {new_type};\n")
         for base_type in base_types:
-            cudafile.write(f"struct complex_{base_type}")
-            cudafile.write("{\n")
-            cudafile.write(f"  {base_type} re, im;\n")
             constructor(base_type, base_types, new_types, priority, cudafile)
             overload_equal(base_type, base_types, new_types, priority, cudafile)
             overload_negate(base_type, cudafile)
