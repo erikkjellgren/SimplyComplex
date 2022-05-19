@@ -444,14 +444,14 @@ def overload_plus_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator+(const {base_type} x, const complex_{new_base_type} &c){{return c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator+(const {base_type} x, const complex_{new_base_type} &c){{return c+x;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator+(const {new_type} &x, const complex_{new_base_type} &c){{return c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator+(const {new_type} &x, const complex_{new_base_type} &c){{return c+x;}}\n"
         )
 
 
@@ -473,14 +473,14 @@ def overload_minus_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator-(const {base_type} x, const complex_{new_base_type} &c){{return -c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator-(const {base_type} x, const complex_{new_base_type} &c){{return -c+x;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator-(const {new_type} &x, const complex_{new_base_type} &c){{return -c+x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator-(const {new_type} &x, const complex_{new_base_type} &c){{return -c+x;}}\n"
         )
 
 
@@ -502,14 +502,14 @@ def overload_product_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator*(const {base_type} x, const complex_{new_base_type} &c){{return c*x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator*(const {base_type} x, const complex_{new_base_type} &c){{return c*x;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator*(const {new_type} &x, const complex_{new_base_type} &c){{return c*x;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator*(const {new_type} &x, const complex_{new_base_type} &c){{return c*x;}}\n"
         )
 
 
@@ -531,14 +531,14 @@ def overload_division_lhs(
     """
     for base_type in base_types:
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator/(const {base_type} x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator/(const {base_type} x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
         )
     for new_type in new_types:
         # Only write this operator for types of lover priority
         if priority[new_type] >= priority[f"complex_{new_base_type}"]:
             continue
         outfile.write(
-            f"__host__ __device__ complex_{new_base_type} complex_{new_base_type}::operator/(const {new_type} &x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
+            f"__host__ __device__ complex_{new_base_type} operator/(const {new_type} &x, const complex_{new_base_type} &c){{return ((complex_{new_base_type})x)/c;}}\n"
         )
 
 

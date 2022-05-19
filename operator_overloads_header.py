@@ -52,7 +52,6 @@ def overload_equal_header(
     new_base_type: str,
     base_types: List[str],
     new_types: List[str],
-    priority: Dict[str, int],
     outfile: TextIO,
 ) -> None:
     """Overloads the = operator.
@@ -67,10 +66,6 @@ def overload_equal_header(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator=(const {base_type} x);\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
-        if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator=(const {new_type} &x);\n")
-            continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator=(const {new_type} &x);\n")
 
 
@@ -78,7 +73,6 @@ def overload_plusequal_header(
     new_base_type: str,
     base_types: List[str],
     new_types: List[str],
-    priority: Dict[str, int],
     outfile: TextIO,
 ) -> None:
     """Overload the += operator.
@@ -93,12 +87,6 @@ def overload_plusequal_header(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator+=(const {base_type} x);\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
-        if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator+=(const {new_type} &x);\n"
-            )
-            continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator+=(const {new_type} &x);\n")
 
 
@@ -106,7 +94,6 @@ def overload_minusequal_header(
     new_base_type: str,
     base_types: List[str],
     new_types: List[str],
-    priority: Dict[str, int],
     outfile: TextIO,
 ) -> None:
     """Overload the -= operator.
@@ -121,12 +108,6 @@ def overload_minusequal_header(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator-=(const {base_type} x);\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
-        if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator-=(const {new_type} &x);\n"
-            )
-            continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator-=(const {new_type} &x);\n")
 
 
@@ -134,7 +115,6 @@ def overload_prodequal_header(
     new_base_type: str,
     base_types: List[str],
     new_types: List[str],
-    priority: Dict[str, int],
     outfile: TextIO,
 ) -> None:
     """Overload the *= operator.
@@ -149,12 +129,6 @@ def overload_prodequal_header(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator*=(const {base_type} x);\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
-        if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator*=(const {new_type} &x);\n"
-            )
-            continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator*=(const {new_type} &x);\n")
 
 
@@ -162,7 +136,6 @@ def overload_divequal_header(
     new_base_type: str,
     base_types: List[str],
     new_types: List[str],
-    priority: Dict[str, int],
     outfile: TextIO,
 ) -> None:
     """Overload the /= operator.
@@ -177,12 +150,6 @@ def overload_divequal_header(
     for base_type in base_types:
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator/=(const {base_type} x);\n")
     for new_type in new_types:
-        # Only write the declaration for operator for types of lower priority
-        if priority[new_type] > priority[f"complex_{new_base_type}"]:
-            outfile.write(
-                f"  __host__ __device__ complex_{new_base_type}& operator/=(const {new_type} &x);\n"
-            )
-            continue
         outfile.write(f"  __host__ __device__ complex_{new_base_type}& operator/=(const {new_type} &x);\n")
 
 
@@ -299,4 +266,120 @@ def overload_division_rhs_header(
             continue
         outfile.write(
             f"  __host__ __device__ complex_{new_base_type} operator/(const {new_type} &x) const;\n"
+        )
+
+
+def overload_plus_lhs_header(
+    new_base_type: str,
+    base_types: List[str],
+    new_types: List[str],
+    priority: Dict[str, int],
+    outfile: TextIO,
+) -> None:
+    """Overload the + operator.
+
+    Args:
+      new_base_type: base type for the new complex struct.
+      base_types: base types for which a complex corrospondance should be contructed.
+      new_types: new complex types.
+      priority: Priority for resulting typer when operating two different types.
+      outfile: File pointer to write struct to.
+    """
+    for base_type in base_types:
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator+(const {base_type} x, const complex_{new_base_type} &c);\n"
+        )
+    for new_type in new_types:
+        # Only write this operator for types of lover priority
+        if priority[new_type] >= priority[f"complex_{new_base_type}"]:
+            continue
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator+(const {new_type} &x, const complex_{new_base_type} &c);\n"
+        )
+
+
+def overload_minus_lhs_header(
+    new_base_type: str,
+    base_types: List[str],
+    new_types: List[str],
+    priority: Dict[str, int],
+    outfile: TextIO,
+) -> None:
+    """Overload the - operator.
+
+    Args:
+      new_base_type: base type for the new complex struct.
+      base_types: base types for which a complex corrospondance should be contructed.
+      new_types: new complex types.
+      priority: Priority for resulting typer when operating two different types.
+      outfile: File pointer to write struct to.
+    """
+    for base_type in base_types:
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator-(const {base_type} x, const complex_{new_base_type} &c);\n"
+        )
+    for new_type in new_types:
+        # Only write this operator for types of lover priority
+        if priority[new_type] >= priority[f"complex_{new_base_type}"]:
+            continue
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator-(const {new_type} &x, const complex_{new_base_type} &c);\n"
+        )
+
+
+def overload_product_lhs_header(
+    new_base_type: str,
+    base_types: List[str],
+    new_types: List[str],
+    priority: Dict[str, int],
+    outfile: TextIO,
+) -> None:
+    """Overload the * operator.
+
+    Args:
+      new_base_type: base type for the new complex struct.
+      base_types: base types for which a complex corrospondance should be contructed.
+      new_types: new complex types.
+      priority: Priority for resulting typer when operating two different types.
+      outfile: File pointer to write struct to.
+    """
+    for base_type in base_types:
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator*(const {base_type} x, const complex_{new_base_type} &c);\n"
+        )
+    for new_type in new_types:
+        # Only write this operator for types of lover priority
+        if priority[new_type] >= priority[f"complex_{new_base_type}"]:
+            continue
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator*(const {new_type} &x, const complex_{new_base_type} &c);\n"
+        )
+
+
+def overload_division_lhs_header(
+    new_base_type: str,
+    base_types: List[str],
+    new_types: List[str],
+    priority: Dict[str, int],
+    outfile: TextIO,
+) -> None:
+    """Overload the / operator.
+
+    Args:
+      new_base_type: base type for the new complex struct.
+      base_types: base types for which a complex corrospondance should be contructed.
+      new_types: new complex types.
+      priority: Priority for resulting typer when operating two different types.
+      outfile: File pointer to write struct to.
+    """
+    for base_type in base_types:
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator/(const {base_type} x, const complex_{new_base_type} &c);\n"
+        )
+    for new_type in new_types:
+        # Only write this operator for types of lover priority
+        if priority[new_type] >= priority[f"complex_{new_base_type}"]:
+            continue
+        outfile.write(
+            f"__host__ __device__ complex_{new_base_type} operator/(const {new_type} &x, const complex_{new_base_type} &c);\n"
         )

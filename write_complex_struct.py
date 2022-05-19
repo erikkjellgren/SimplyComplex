@@ -28,14 +28,18 @@ from operator_overloads import (
 from operator_overloads_header import (
     constructor_header,
     overload_divequal_header,
+    overload_division_lhs_header,
     overload_division_rhs_header,
     overload_equal_header,
+    overload_minus_lhs_header,
     overload_minus_rhs_header,
     overload_minusequal_header,
     overload_negate_header,
+    overload_plus_lhs_header,
     overload_plus_rhs_header,
     overload_plusequal_header,
     overload_prodequal_header,
+    overload_product_lhs_header,
     overload_product_rhs_header,
 )
 
@@ -128,17 +132,22 @@ def write_headerfile(base_types: List[str], priority: Dict[str, int]) -> None:
             headerfile.write("{\n")
             headerfile.write(f"  {base_type} re, im;\n")
             constructor_header(base_type, base_types, new_types, priority, headerfile)
-            overload_equal_header(base_type, base_types, new_types, priority, headerfile)
+            overload_equal_header(base_type, base_types, new_types, headerfile)
             overload_negate_header(base_type, headerfile)
-            overload_plusequal_header(base_type, base_types, new_types, priority, headerfile)
-            overload_minusequal_header(base_type, base_types, new_types, priority, headerfile)
-            overload_prodequal_header(base_type, base_types, new_types, priority, headerfile)
-            overload_divequal_header(base_type, base_types, new_types, priority, headerfile)
+            overload_plusequal_header(base_type, base_types, new_types, headerfile)
+            overload_minusequal_header(base_type, base_types, new_types, headerfile)
+            overload_prodequal_header(base_type, base_types, new_types, headerfile)
+            overload_divequal_header(base_type, base_types, new_types, headerfile)
             overload_plus_rhs_header(base_type, base_types, new_types, priority, headerfile)
             overload_minus_rhs_header(base_type, base_types, new_types, priority, headerfile)
             overload_product_rhs_header(base_type, base_types, new_types, priority, headerfile)
             overload_division_rhs_header(base_type, base_types, new_types, priority, headerfile)
             headerfile.write("};\n")
+        for base_type in base_types:
+            overload_plus_lhs_header(base_type, base_types, new_types, priority, headerfile)
+            overload_minus_lhs_header(base_type, base_types, new_types, priority, headerfile)
+            overload_product_lhs_header(base_type, base_types, new_types, priority, headerfile)
+            overload_division_lhs_header(base_type, base_types, new_types, priority, headerfile)
 
 
 if __name__ == "__main__":
