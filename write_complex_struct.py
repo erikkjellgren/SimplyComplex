@@ -79,7 +79,6 @@ def write_cudafile(base_types: List[str], priority: Dict[str, int]) -> None:
             overload_minus_rhs(base_type, base_types, new_types, priority, cudafile)
             overload_product_rhs(base_type, base_types, new_types, priority, cudafile)
             overload_division_rhs(base_type, base_types, new_types, priority, cudafile)
-            cudafile.write("};\n")
         for base_type in base_types:
             overload_plus_lhs(base_type, base_types, new_types, priority, cudafile)
             overload_minus_lhs(base_type, base_types, new_types, priority, cudafile)
