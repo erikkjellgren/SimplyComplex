@@ -1,9 +1,7 @@
 __pycache__
 SimplyComplex.h
 gpu_complex.h
-gpu_complex.h.tmp
-SimplyComplex.c
+SimplyComplex.cu
 gpu_complex.c
-gpu_complex.c.tmp
 local/
 build/

@@ -70,7 +70,8 @@ def write_cudafile(base_types: List[str], priority: Dict[str, int]) -> None:
         # Only guarenteed to be a non-exsisting priority_value because
         # priority values are required to be above zero.
         priority[type_name] = max_priority + priority[base_type]
-    with open("SimplyComplex.c", "w", encoding="UTF-8") as cudafile:
+    with open("SimplyComplex.cu", "w", encoding="UTF-8") as cudafile:
+        cudafile.write('#include "SimplyComplex.h"\n')
         for base_type in base_types:
             constructor(base_type, base_types, new_types, priority, cudafile)
             overload_equal(base_type, base_types, new_types, priority, cudafile)

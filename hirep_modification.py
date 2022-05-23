@@ -45,7 +45,7 @@ if __name__ == "__main__":
                         .replace("complex_double", "hr_complex")
                     )
 
-    with open("SimplyComplex.c", "r", encoding="UTF-8") as file:
+    with open("SimplyComplex.cu", "r", encoding="UTF-8") as file:
         complex_struct_members = file.readlines()
 
     with open("gpu_complex.c", "w", encoding="UTF-8") as new_cudafile:
@@ -79,9 +79,13 @@ if __name__ == "__main__":
             "*******************************************************************************/\n"
         )
         new_cudafile.write('#include "hr_complex.h"\n')
+        new_cudafile.write("#ifdef WITH_GPU\n")
         for struct_line in complex_struct_members:
+            if "SimplyComplex.h" in struct_line:
+                continue
             new_cudafile.write(
                 struct_line.replace("complex_int", "hr_complex_int")
                 .replace("complex_float", "hr_complex_flt")
                 .replace("complex_double", "hr_complex")
             )
+        new_cudafile.write("#endif //WITH_GPU\n")
