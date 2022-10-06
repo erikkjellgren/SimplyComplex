@@ -58,7 +58,7 @@ def write_headerfile(base_types: List[str], priority: Dict[str, int]) -> None:
         for new_type in new_types:
             headerfile.write(f"struct {new_type};\n")
         for base_type in base_types:
-            headerfile.write(f"struct complex_{base_type}")
+            headerfile.write(f"struct __align__(16) complex_{base_type}")
             headerfile.write("{\n")
             headerfile.write(f"  {base_type} re, im;\n")
             constructor(base_type, base_types, new_types, priority, headerfile)
