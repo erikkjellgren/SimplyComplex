@@ -205,6 +205,30 @@ TEST(ComplexDouble, overload_div_lhs_integer){
     ASSERT_EQ(typeid(int), typeid(b.re));
     ASSERT_EQ(typeid(int), typeid(b.im));
 }
+TEST(ComplexFloat, size){
+    complex_float a = complex_float(1.1, 2.2);
+    ASSERT_EQ(8, sizeof(a));
+}
+TEST(ComplexDouble, size){
+    complex_double a = complex_double(1.1, 2.2);
+    ASSERT_EQ(16, sizeof(a));
+}
+TEST(ComplexInteger, size){
+    complex_int a = complex_int(1.1, 2.2);
+    ASSERT_EQ(8, sizeof(a));
+}
+TEST(ComplexFloat, align){
+    complex_float a = complex_float(1.1, 2.2);
+    ASSERT_EQ(4, alignof(a));
+}
+TEST(ComplexDouble, align){
+    complex_double a = complex_double(1.1, 2.2);
+    ASSERT_EQ(8, alignof(a));
+}
+TEST(ComplexInteger, align){
+    complex_int a = complex_int(1.1, 2.2);
+    ASSERT_EQ(4, alignof(a));
+}
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
